@@ -1,5 +1,6 @@
 package pl.wsei.pam.lab03;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -7,9 +8,11 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
@@ -24,11 +27,33 @@ public class BoardActivity extends AppCompatActivity {
     private List<Integer> clicedTiles = new ArrayList<>();
     private List<ImageButton> clickedButtons = new ArrayList<>();
 
+    private String lastClicked = "";
+
+    private ArrayList<String> revealed = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board);
-        fillBoardRandomly();
+        if (savedInstanceState != null){
+            icons[0] = savedInstanceState.getIntArray("iconsRow0");
+            icons[1] = savedInstanceState.getIntArray("iconsRow1");
+            icons[2] = savedInstanceState.getIntArray("iconsRow2");
+            icons[3] = savedInstanceState.getIntArray("iconsRow3");
+            revealed = savedInstanceState.getStringArrayList("revealedCards");
+            GridLayout root = findViewById(R.id.board_activity_root);
+            for(int i = 0; i < root.getChildCount(); i++){
+                ImageButton button = (ImageButton) root.getChildAt(i);
+                String tag = (String) button.getTag();
+                if (revealed.contains(tag)){
+                    int row = Integer.parseInt(tag.split(" ")[0]);
+                    int col = Integer.parseInt(tag.split(" ")[1]);
+                    button.setImageDrawable(getResources().getDrawable(icons[row][col]));
+                    //znaleziony button należy odkryć ustawiając mu ikonę pobraną z icons o współrzednych w tagu'
+                }
+            }
+        } else {
+            fillBoardRandomly();
+        }
         handler = new Handler(getMainLooper());
     }
 
@@ -64,7 +89,8 @@ public class BoardActivity extends AppCompatActivity {
             if (clicedTiles.size() == 2){
                 if ((int) clicedTiles.get(0) == clicedTiles.get(1)){
                     pairCounter++;
-                    Log.i("BOARD", "Equals " + pairCounter);
+                    revealed.add((String) clickedButtons.get(0).getTag());
+                    revealed.add((String) clickedButtons.get(1).getTag());
                     for (ImageButton btn: clickedButtons) {
                         btn.setEnabled(false);
                     }
@@ -81,7 +107,6 @@ public class BoardActivity extends AppCompatActivity {
                 finishActivityAndReturnResult(8);
             }
         }, 1000);
-
     }
 
     private void finishActivityAndReturnResult(int points){
@@ -93,6 +118,26 @@ public class BoardActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Czy na pewno chcesz wyjść z gry?")
+                .setPositiveButton("Tak", (dialog, i) -> {
+                    super.onBackPressed();
+                })
+                .setNegativeButton("Nie", (dialog, i) -> {
+                })
+                .create()
+                .show();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        Log.i("BOARD", "SAVE");
+        super.onSaveInstanceState(outState);
+        outState.putIntArray("iconsRow0", icons[0]);
+        outState.putIntArray("iconsRow1", icons[1]);
+        outState.putIntArray("iconsRow2", icons[2]);
+        outState.putIntArray("iconsRow3", icons[3]);
+        outState.putStringArrayList("revealedCards", revealed);
+
     }
 }

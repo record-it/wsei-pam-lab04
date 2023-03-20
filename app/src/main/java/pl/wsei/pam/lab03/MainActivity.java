@@ -18,8 +18,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            int points = result.getData().getIntExtra("points", 0);
-            Log.i("MAIN", "points " + points);
+            if (result.getResultCode() == RESULT_OK) {
+                int points = result.getData().getIntExtra("points", 0);
+                Log.i("MAIN", "points " + points);
+            }
         });
     }
 
@@ -32,5 +34,4 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, BoardActivity.class);
         launcher.launch(intent);
     }
-
 }

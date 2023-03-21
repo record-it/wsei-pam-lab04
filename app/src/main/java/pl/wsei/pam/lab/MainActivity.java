@@ -12,7 +12,6 @@ import android.widget.ImageButton;
 
 public class MainActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launcher;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -88,7 +88,6 @@ public class BoardActivity extends AppCompatActivity {
                     pairCounter++;
                     revealed.add((String) clickedButtons.get(0).getTag());
                     revealed.add((String) clickedButtons.get(1).getTag());
-                    //
                     for (ImageButton btn: clickedButtons) {
                         btn.setEnabled(false);
                     }

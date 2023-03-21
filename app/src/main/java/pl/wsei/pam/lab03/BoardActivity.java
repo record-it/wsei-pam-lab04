@@ -11,7 +11,6 @@ import java.util.ArrayList;
 
 public class BoardActivity extends AppCompatActivity {
 
-    private ArrayList<String> revealed = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

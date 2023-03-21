@@ -1,4 +1,4 @@
-package pl.wsei.pam.lab03;
+package pl.wsei.pam.lab;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'pl.wsei.pam.lab03'
+    namespace 'pl.wsei.pam.lab'
     compileSdk 33
 
     defaultConfig {
-        applicationId "pl.wsei.pam.lab03"
+        applicationId "pl.wsei.pam.lab"
         minSdk 24
         targetSdk 33
         versionCode 1

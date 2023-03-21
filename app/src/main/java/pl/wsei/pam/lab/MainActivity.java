@@ -1,4 +1,4 @@
-package pl.wsei.pam.lab03;
+package pl.wsei.pam.lab;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
+
 
 public class MainActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> launcher;

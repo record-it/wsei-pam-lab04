@@ -1,13 +1,10 @@
-package pl.wsei.pam.lab03;
+package pl.wsei.pam.lab;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.ArrayList;
 
 public class BoardActivity extends AppCompatActivity {
 

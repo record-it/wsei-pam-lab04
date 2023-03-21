@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -47,7 +48,7 @@ public class BoardActivity extends AppCompatActivity {
                 if (revealed.contains(tag)){
                     int row = Integer.parseInt(tag.split(" ")[0]);
                     int col = Integer.parseInt(tag.split(" ")[1]);
-                    button.setImageDrawable(getResources().getDrawable(icons[row][col]));
+                    button.setImageDrawable(getResources().getDrawable( icons[row][col],getTheme()));
                     //znaleziony button należy odkryć ustawiając mu ikonę pobraną z icons o współrzednych w tagu'
                 }
             }
@@ -81,7 +82,7 @@ public class BoardActivity extends AppCompatActivity {
         String tag = (String) v.getTag();
         int row = Integer.parseInt(tag.split(" ")[0]);
         int col = Integer.parseInt(tag.split(" ")[1]);
-        v.setImageDrawable(getResources().getDrawable(icons[row][col]));
+        v.setImageDrawable(getResources().getDrawable(icons[row][col], getTheme()));
         Log.i("BOARD", row + " " + col);
         clicedTiles.add(icons[row][col]);
         clickedButtons.add(v);
@@ -98,7 +99,7 @@ public class BoardActivity extends AppCompatActivity {
                 } else {
                     clicedTiles.clear();
                     for (ImageButton btn: clickedButtons) {
-                        btn.setImageDrawable(getResources().getDrawable(R.drawable.deck));
+                        btn.setImageDrawable(getResources().getDrawable(R.drawable.deck, getTheme()));
                     }
                 }
                 clicedTiles.clear();

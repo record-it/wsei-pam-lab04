@@ -18,16 +18,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                int points = result.getData().getIntExtra("points", 0);
-                Log.i("MAIN", "points " + points);
-            }
+            int points = result.getData().getIntExtra("points", 0);
+            Log.i("MAIN", "points " + points);
         });
-    }
-
-    public void clickButton(View v) {
-        ImageButton clikedButton = (ImageButton) v;
-        Log.i("MAIN", clikedButton.toString());
     }
 
     public void onClikStar44Board(View w) {

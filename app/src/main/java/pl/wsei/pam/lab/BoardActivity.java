@@ -26,6 +26,7 @@ public class BoardActivity extends AppCompatActivity {
 
     private String lastClicked = "";
 
+    GridLayout root;
     private ArrayList<String> revealed = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +38,7 @@ public class BoardActivity extends AppCompatActivity {
             icons[2] = savedInstanceState.getIntArray("iconsRow2");
             icons[3] = savedInstanceState.getIntArray("iconsRow3");
             revealed = savedInstanceState.getStringArrayList("revealedCards");
-            GridLayout root = findViewById(R.id.board_activity_root);
+            root = findViewById(R.id.board_activity_root);
             for(int i = 0; i < root.getChildCount(); i++){
                 ImageButton button = (ImageButton) root.getChildAt(i);
                 String tag = (String) button.getTag();
@@ -45,7 +46,6 @@ public class BoardActivity extends AppCompatActivity {
                     int row = Integer.parseInt(tag.split(" ")[0]);
                     int col = Integer.parseInt(tag.split(" ")[1]);
                     button.setImageDrawable(getResources().getDrawable( icons[row][col],getTheme()));
-                    //znaleziony button należy odkryć ustawiając mu ikonę pobraną z icons o współrzednych w tagu'
                 }
             }
         } else {
@@ -135,6 +135,13 @@ public class BoardActivity extends AppCompatActivity {
         outState.putIntArray("iconsRow2", icons[2]);
         outState.putIntArray("iconsRow3", icons[3]);
         outState.putStringArrayList("revealedCards", revealed);
+    }
+
+    private void disableButton(){
+
+    }
+
+    private void enableButtons(){
 
     }
 }

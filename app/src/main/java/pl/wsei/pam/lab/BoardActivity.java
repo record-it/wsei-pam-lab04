@@ -37,8 +37,6 @@ public class BoardActivity extends AppCompatActivity {
     private boolean isBlockedUI = false;
     GridLayout root;
     private ArrayList<String> revealed = new ArrayList<>();
-    private MediaPlayer completionPlayer;
-    private MediaPlayer negativePLayer;
 
     private boolean isSound = true;
     @Override
@@ -53,7 +51,6 @@ public class BoardActivity extends AppCompatActivity {
         }
         handler = new Handler(getMainLooper());
     }
-
     private void fillBoardRandomly() {
         icons[0][0] = R.drawable.fig_1;
         icons[0][1] = R.drawable.fig_2;
@@ -72,14 +69,12 @@ public class BoardActivity extends AppCompatActivity {
         icons[3][2] = R.drawable.fig_7;
         icons[3][3] = R.drawable.fig_8;
     }
-
     public void clickButton(View view) {
         ImageButton v = (ImageButton) view;
         String tag = (String) v.getTag();
         int row = Integer.parseInt(tag.split(" ")[0]);
         int col = Integer.parseInt(tag.split(" ")[1]);
         v.setImageDrawable(getResources().getDrawable(icons[row][col], getTheme()));
-        v.setImageAlpha(255);
         v.setTag(R.integer.image_id, icons[row][col]);
         clickedButtons.add(v);
         if (clickedButtons.size() == 2) {
@@ -90,36 +85,28 @@ public class BoardActivity extends AppCompatActivity {
                 revealed.add((String) clickedButtons.get(1).getTag());
                 for (ImageButton btn : clickedButtons) {
                     btn.setEnabled(false);
-                    animatePairedButton(btn, () -> {
-                        isBlockedUI = false;
-                    });
                 }
-                clickedButtons.clear();
             } else {
 
                 for (ImageButton btn : clickedButtons) {
-                    animateNotPairedButton(btn, () -> {
-                        handler.post(() -> {
-                            btn.setImageDrawable(getResources().getDrawable(R.drawable.deck, getTheme()));
-                            isBlockedUI = false;
-                        });
-                    });
+                    handler.postDelayed(() ->
+                    btn.setImageDrawable(getResources().getDrawable(R.drawable.deck, getTheme())),
+                    1000
+                    );
                 }
-                clickedButtons.clear();
             }
+            clickedButtons.clear();
         }
         if (pairCounter == 8) {
             finishActivityAndReturnResult(8);
         }
     }
-
     private void finishActivityAndReturnResult(int points) {
         Intent intent = new Intent();
         intent.putExtra("points", points);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
-
     @Override
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -132,7 +119,6 @@ public class BoardActivity extends AppCompatActivity {
                 .create()
                 .show();
     }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         Log.i("BOARD", "SAVE");
@@ -161,85 +147,4 @@ public class BoardActivity extends AppCompatActivity {
             }
         }
     }
-
-
-    private void animatePairedButton(ImageButton button, Runnable action) {
-        AnimatorSet set = new AnimatorSet();
-        button.setPivotX(random.nextFloat() * 200);
-        button.setPivotY(random.nextFloat() * 200);
-
-        ObjectAnimator rotation = ObjectAnimator.ofFloat(button, "rotation", 1080);
-        ObjectAnimator scallingX = ObjectAnimator.ofFloat(button, "scaleX", 1, 4);
-        ObjectAnimator scallingY = ObjectAnimator.ofFloat(button, "scaleY", 1, 4);
-        ObjectAnimator fade = ObjectAnimator.ofFloat(button, "alpha", 1f, 0f);
-        set.setStartDelay(500);
-        set.setDuration(2000);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.playTogether(rotation, scallingX, scallingY, fade);
-        set.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(@NonNull Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(@NonNull Animator animator) {
-                button.setScaleX(1);
-                button.setScaleY(1);
-                button.setAlpha(0.0f);
-                action.run();
-            }
-
-            @Override
-            public void onAnimationCancel(@NonNull Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(@NonNull Animator animator) {
-
-            }
-        });
-        set.start();
-    }
-
-    private void animateNotPairedButton(ImageButton button, Runnable action) {
-        if (isSound) {
-            negativePLayer.start();
-        }
-        ObjectAnimator rotation1 = ObjectAnimator.ofFloat(button, "rotation", 0, 30, -30, 0, 20, -20, 0, 10, -10, 0);
-        ObjectAnimator fade = ObjectAnimator.ofInt(button, "imageAlpha", 255, 0);
-
-        AnimatorSet set = new AnimatorSet();
-        rotation1.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(1000);
-        set.playSequentially(rotation1, fade);
-        set.start();
-        set.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(@NonNull Animator animator) {
-            }
-
-            @Override
-            public void onAnimationEnd(@NonNull Animator animator) {
-                action.run();
-            }
-
-            @Override
-            public void onAnimationCancel(@NonNull Animator animator) {
-            }
-
-            @Override
-            public void onAnimationRepeat(@NonNull Animator animator) {
-            }
-        });
-    }
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev){
-        super.dispatchTouchEvent(ev);
-        return !isBlockedUI;
-    }
-
-
-
 }

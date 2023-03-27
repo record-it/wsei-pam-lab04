@@ -1,13 +1,11 @@
 package pl.wsei.pam.lab;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -17,9 +15,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 
@@ -38,14 +34,13 @@ public class BoardActivity extends AppCompatActivity {
     private Handler handler;
     private int pairCounter = 0;
     private List<ImageButton> clickedButtons = new ArrayList<>();
-    private String lastClicked = "";
-
-    private boolean blocked = false;
+    private boolean isBlockedUI = false;
     GridLayout root;
     private ArrayList<String> revealed = new ArrayList<>();
     private MediaPlayer completionPlayer;
     private MediaPlayer negativePLayer;
 
+    private boolean isSound = true;
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -57,8 +52,6 @@ public class BoardActivity extends AppCompatActivity {
             fillBoardRandomly();
         }
         handler = new Handler(getMainLooper());
-        completionPlayer = MediaPlayer.create(this, R.raw.completion);
-        negativePLayer = MediaPlayer.create(this, R.raw.negative_guitar);
     }
 
     private void fillBoardRandomly() {
@@ -81,13 +74,7 @@ public class BoardActivity extends AppCompatActivity {
     }
 
     public void clickButton(View view) {
-//        if (blocked) {
-//            return;
-//        }
         ImageButton v = (ImageButton) view;
-        if (clickedButtons.size() == 1 && clickedButtons.get(0) == v) {
-            return;
-        }
         String tag = (String) v.getTag();
         int row = Integer.parseInt(tag.split(" ")[0]);
         int col = Integer.parseInt(tag.split(" ")[1]);
@@ -96,7 +83,7 @@ public class BoardActivity extends AppCompatActivity {
         v.setTag(R.integer.image_id, icons[row][col]);
         clickedButtons.add(v);
         if (clickedButtons.size() == 2) {
-            blocked = true;
+            isBlockedUI = true;
             if ((int) clickedButtons.get(0).getTag(R.integer.image_id) == (int) clickedButtons.get(1).getTag(R.integer.image_id)) {
                 pairCounter++;
                 revealed.add((String) clickedButtons.get(0).getTag());
@@ -104,7 +91,7 @@ public class BoardActivity extends AppCompatActivity {
                 for (ImageButton btn : clickedButtons) {
                     btn.setEnabled(false);
                     animatePairedButton(btn, () -> {
-                        blocked = false;
+                        isBlockedUI = false;
                     });
                 }
                 clickedButtons.clear();
@@ -114,7 +101,7 @@ public class BoardActivity extends AppCompatActivity {
                     animateNotPairedButton(btn, () -> {
                         handler.post(() -> {
                             btn.setImageDrawable(getResources().getDrawable(R.drawable.deck, getTheme()));
-                            blocked = false;
+                            isBlockedUI = false;
                         });
                     });
                 }
@@ -175,29 +162,17 @@ public class BoardActivity extends AppCompatActivity {
         }
     }
 
-    private void disableButton() {
-        for (int i = 0; i < root.getChildCount(); i++) {
-            View view = root.getChildAt(i);
-            view.setEnabled(true);
-        }
-    }
-
-    private void enableButtons() {
-        for (int i = 0; i < root.getChildCount(); i++) {
-            View view = root.getChildAt(i);
-            view.setEnabled(true);
-        }
-    }
 
     private void animatePairedButton(ImageButton button, Runnable action) {
-        completionPlayer.start();
         AnimatorSet set = new AnimatorSet();
         button.setPivotX(random.nextFloat() * 200);
         button.setPivotY(random.nextFloat() * 200);
+
         ObjectAnimator rotation = ObjectAnimator.ofFloat(button, "rotation", 1080);
         ObjectAnimator scallingX = ObjectAnimator.ofFloat(button, "scaleX", 1, 4);
         ObjectAnimator scallingY = ObjectAnimator.ofFloat(button, "scaleY", 1, 4);
         ObjectAnimator fade = ObjectAnimator.ofFloat(button, "alpha", 1f, 0f);
+        set.setStartDelay(500);
         set.setDuration(2000);
         set.setInterpolator(new DecelerateInterpolator());
         set.playTogether(rotation, scallingX, scallingY, fade);
@@ -229,7 +204,9 @@ public class BoardActivity extends AppCompatActivity {
     }
 
     private void animateNotPairedButton(ImageButton button, Runnable action) {
-        negativePLayer.start();
+        if (isSound) {
+            negativePLayer.start();
+        }
         ObjectAnimator rotation1 = ObjectAnimator.ofFloat(button, "rotation", 0, 30, -30, 0, 20, -20, 0, 10, -10, 0);
         ObjectAnimator fade = ObjectAnimator.ofInt(button, "imageAlpha", 255, 0);
 
@@ -260,13 +237,9 @@ public class BoardActivity extends AppCompatActivity {
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev){
         super.dispatchTouchEvent(ev);
-        return !blocked;
+        return !isBlockedUI;
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        completionPlayer.release();
-        negativePLayer.release();
-    }
+
+
 }

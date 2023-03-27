@@ -170,6 +170,7 @@ public class BoardActivity extends AppCompatActivity {
                 int row = Integer.parseInt(tag.split(" ")[0]);
                 int col = Integer.parseInt(tag.split(" ")[1]);
                 button.setImageDrawable(getResources().getDrawable(icons[row][col], getTheme()));
+                button.setAlpha(0.0f);
             }
         }
     }
@@ -260,5 +261,12 @@ public class BoardActivity extends AppCompatActivity {
     public boolean dispatchTouchEvent(MotionEvent ev){
         super.dispatchTouchEvent(ev);
         return !blocked;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        completionPlayer.release();
+        negativePLayer.release();
     }
 }
